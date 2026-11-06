@@ -6,7 +6,9 @@
 <title>Gheith · Crafted in Damietta</title>
 <meta name="description" content="Living rooms, classic salons, bedrooms and dining made by hand in Damietta. Shop complete rooms or single pieces, made to measure, with delivery, assembly and 0% installments.">
 <meta name="theme-color" content="#3f2723">
-<script>(function(){var d=document.documentElement;d.classList.add('js');})();</script>
+<script>(function(){var d=document.documentElement;d.classList.add('js');
+// hide the hero copy from the first paint so it only ever plays in once; a failsafe shows it if the main script never runs
+if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){d.classList.add('intro-run');setTimeout(function(){d.classList.remove('intro-run');},6000);}})();</script>
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@200,300,301,400,401,500,600,700&display=swap">
 <style>
@@ -276,6 +278,9 @@ span.ph, b.ph { white-space: nowrap; }
 .hcard { position: absolute; inset: 0; display: grid; grid-template-columns: 74px 1fr 40px; gap: 14px; align-items: center; padding: 12px 14px 12px 12px; background: rgba(36, 22, 19, .28); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(248, 241, 231, .24); color: var(--ivory); opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity .4s, transform .5s; }
 .hcard.on { opacity: 1; transform: none; pointer-events: auto; transition: opacity .9s 1.1s, transform 1.2s var(--ease) 1.1s, background .3s; }
 .intro-run .hcard.on { opacity: 0; transform: translateY(14px); }
+/* after the first slide change the buttons and room card come straight back in, so they are never gone for long */
+.hero.cycled .hc.on .hc-cta { transition: opacity .7s .4s, transform .9s var(--ease) .4s; }
+.hero.cycled .hcard.on { transition: opacity .7s .4s, transform .9s var(--ease) .4s, background .3s; }
 .hcard:hover { background: rgba(36, 22, 19, .45); }
 .hcard-im { width: 74px; height: 74px; border-radius: 37px 37px 0 0; overflow: hidden; }
 .hcard-im img { width: 100%; height: 100%; object-fit: cover; }
@@ -2062,7 +2067,7 @@ span.ph, b.ph { white-space: nowrap; }
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var G = window.gsap, ST = window.ScrollTrigger;
   var motion = !!(G && ST) && !reduce;
-  if (!motion) root.classList.add('no-gsap');
+  if (!motion) { root.classList.add('no-gsap'); root.classList.remove('intro-run'); }
   var fmt = function (n) { return 'EGP ' + Math.round(n).toLocaleString('en-US'); };
   var store = {
     get: function (k, d) { try { var v = localStorage.getItem('gheith.' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
@@ -2288,6 +2293,7 @@ span.ph, b.ph { white-space: nowrap; }
   $('#heroTabs').style.setProperty('--dur', DUR / 1000 + 's');
   function goHero(n) {
     n = (n + slides.length) % slides.length; if (n === hi) return;
+    hero.classList.add('cycled');
     stackShow(slides, n, 1600, function (m) { return [m, $('picture', m)]; });
     copies[hi].classList.remove('on'); copies[hi].setAttribute('aria-hidden', 'true');
     hcards[hi].classList.remove('on'); hcards[hi].tabIndex = -1; tabs[hi].classList.remove('on');
@@ -2953,7 +2959,6 @@ span.ph, b.ph { white-space: nowrap; }
   if (!playIntro) {
     armHero();
     if (motion) {
-      root.classList.add('intro-run');
       var go = function () { if (go.done) return; go.done = 1; requestAnimationFrame(function () { root.classList.remove('intro-run'); }); };
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(go); setTimeout(go, 1200);
     }
@@ -3048,16 +3053,19 @@ span.ph, b.ph { white-space: nowrap; }
   var say = $('#say');
   if (say) {
     say.innerHTML = say.textContent.split(/\s+/).map(function (w) { return '<span class="w">' + w + '</span>'; }).join(' ');
-    G.fromTo($$('.w', say), { opacity: .16 }, { opacity: 1, stagger: .05, ease: 'none', scrollTrigger: { trigger: say, start: 'top 82%', end: 'bottom 48%', scrub: .6 } });
+    // phones: start lighter-faded and finish while the paragraph is still low on the screen, so the line being read is never faint
+    var sayM = mqMobile.matches;
+    G.fromTo($$('.w', say), { opacity: sayM ? .3 : .16 }, { opacity: 1, stagger: .05, ease: 'none', scrollTrigger: { trigger: say, start: sayM ? 'top 92%' : 'top 82%', end: sayM ? 'bottom 78%' : 'bottom 48%', scrub: .6 } });
   }
   G.from('.ch', { opacity: 0, y: 16, duration: 1, stagger: .08, ease: 'power2.out', scrollTrigger: { trigger: '.chars', start: 'top 90%' } });
 
   // marquee: drifts on its own, speeds up and turns with the scroll
-  var mq = $('#mqTrack'), mqX = 0, mqV = 0, mqDir = -1, mqW = 0, mqS = -.6;
+  var mq = $('#mqTrack'), mqX = 0, mqV = 0, mqDir = -1, mqW = 0, mqS = -.6, mqOn = false;
   function mqMeasure() { mqW = $('.mq-seq', mq).offsetWidth; }
   mqMeasure(); window.addEventListener('resize', mqMeasure);
-  ST.create({ trigger: '.marq', start: 'top bottom', end: 'bottom top', onUpdate: function (s) { mqV = s.getVelocity() / 300; if (s.direction) mqDir = s.direction > 0 ? -1 : 1; } });
+  ST.create({ trigger: '.marq', start: 'top bottom', end: 'bottom top', onToggle: function (s) { mqOn = s.isActive; }, onUpdate: function (s) { mqV = s.getVelocity() / 300; if (s.direction) mqDir = s.direction > 0 ? -1 : 1; } });
   G.ticker.add(function () {
+    if (!mqOn) return;  // only drift while the strip is on screen
     var target = (0.6 + Math.min(Math.abs(mqV), 10)) * mqDir; mqS += (target - mqS) * .06; mqV *= .92; mqX += mqS;
     if (mqX < -mqW) mqX += mqW; if (mqX > 0) mqX -= mqW;
     mq.style.transform = 'translate3d(' + mqX + 'px,0,0)';
@@ -3142,7 +3150,16 @@ span.ph, b.ph { white-space: nowrap; }
     return function () { swST = null; };
   });
   mm.add('(max-width: 900px)', function () {
+    // craft journey is a swipe row here: keep its counter and bar in step with the swipe
+    var crRow = $('#crTrack'), crSteps = $$('.crs:not(.crs-end)', crRow);
+    var crSync = function () {
+      var max = crRow.scrollWidth - crRow.clientWidth, p = max > 0 ? Math.min(1, crRow.scrollLeft / max) : 0;
+      $('#crBar').style.transform = 'scaleX(' + (.2 + p * .8) + ')';
+      $('#crCount').firstChild.textContent = ('0' + Math.min(crSteps.length, Math.round(p * (crSteps.length - 1)) + 1)).slice(-2);
+    };
+    crRow.addEventListener('scroll', crSync, { passive: true }); crSync();
     ST.create({ trigger: '#mtmIn', start: 'top 70%', once: true, onEnter: function () { plan.duration(3.4).play(); setTimeout(function () { setStep(.5); }, 1200); setTimeout(function () { setStep(.9); }, 2400); } });
+    return function () { crRow.removeEventListener('scroll', crSync); };
   });
 
   window.addEventListener('load', function () { ST.refresh(); });
