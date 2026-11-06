@@ -6,7 +6,7 @@
 <title>Gheith · Crafted in Damietta</title>
 <meta name="description" content="Living rooms, classic salons, bedrooms and dining made by hand in Damietta. Shop complete rooms or single pieces, made to measure, with delivery, assembly and 0% installments.">
 <meta name="theme-color" content="#3f2723">
-<script>(function(){var d=document.documentElement;d.classList.add('js');try{if(sessionStorage.getItem('gheith.intro')||matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('no-intro')}catch(e){}setTimeout(function(){d.classList.add('intro-safe')},4000)})();</script>
+<script>(function(){var d=document.documentElement;d.classList.add('js');})();</script>
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@200,300,301,400,401,500,600,700&display=swap">
 <style>
@@ -101,26 +101,6 @@ span.ph, b.ph { white-space: nowrap; }
   radial-gradient(circle at 100% 0, #0000 calc(var(--fr) - .6px), var(--fc) calc(var(--fr) - .5px) calc(var(--fr) + .5px), #0000 calc(var(--fr) + .6px)) 100% 0 / calc(var(--fr) + 2px) calc(var(--fr) + 2px) no-repeat,
   radial-gradient(circle at 0 100%, #0000 calc(var(--fr) - .6px), var(--fc) calc(var(--fr) - .5px) calc(var(--fr) + .5px), #0000 calc(var(--fr) + .6px)) 0 100% / calc(var(--fr) + 2px) calc(var(--fr) + 2px) no-repeat,
   radial-gradient(circle at 100% 100%, #0000 calc(var(--fr) - .6px), var(--fc) calc(var(--fr) - .5px) calc(var(--fr) + .5px), #0000 calc(var(--fr) + .6px)) 100% 100% / calc(var(--fr) + 2px) calc(var(--fr) + 2px) no-repeat; }
-
-/* ---------- intro: the lattice doors ---------- */
-.intro { display: none; }
-.js:not(.no-intro):not(.intro-safe) .intro { display: block; position: fixed; inset: 0; z-index: 300; }
-.door { position: absolute; top: 0; bottom: 0; width: 50.2%; background: var(--burg) var(--pt-ogee-door) center / 124.5px 78px; }
-.door.l { left: 0; background-position: right center; }
-.door.r { right: 0; background-position: left center; }
-.door::after { content: ""; position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(216, 195, 165, .45); }
-.door.l::after { right: 0; }
-.door.r::after { left: 0; }
-.door-fr { position: absolute; inset: 22px; border: 1px solid rgba(216, 195, 165, .35); }
-.door.l .door-fr { right: 14px; }
-.door.r .door-fr { left: 14px; }
-.in-c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; color: var(--sand); }
-.in-c::before { content: ""; position: absolute; width: min(460px, 86vw); aspect-ratio: 1.6; background: radial-gradient(closest-side, rgba(107, 44, 44, .96) 30%, rgba(107, 44, 44, .7) 62%, rgba(107, 44, 44, 0)); z-index: -1; }
-.in-calli { width: min(320px, 64vw); }
-.in-calli svg { display: block; width: 100%; height: auto; fill: currentColor; overflow: visible; }
-.in-l { display: flex; align-items: center; gap: 14px; font-size: 11px; letter-spacing: .42em; text-transform: uppercase; }
-.in-l i { width: 9px; height: 11px; background: currentColor; -webkit-mask: var(--star) center / contain no-repeat; mask: var(--star) center / contain no-repeat; }
-.in-l [lang="ar"] { font-size: 14px; letter-spacing: 0; }
 
 /* ---------- announcement + header ---------- */
 .topbar { position: fixed; inset: 0 0 auto; z-index: 60; overflow-x: clip; transition: transform .7s var(--ease); }
@@ -1335,10 +1315,7 @@ span.ph, b.ph { white-space: nowrap; }
 </style>
 </head>
 <body>
-<div class="intro" id="intro" aria-hidden="true">
-  <div class="door l"><span class="door-fr"></span></div><div class="door r"><span class="door-fr"></span></div>
-  <div class="in-c"><div class="in-calli"><svg viewBox="0 64.69 439.27 187.86" aria-hidden="true"><path d="M250.96 234.14 C235.92 242.87 221.59 235.4 212.81 234.33 C199.57 232.72 194.83 239.7 189.35 248.16 C187.85 250.48 189.37 249.98 190.55 249.12 C199.92 242.31 211.48 250.55 227.04 250.53 C237.58 250.52 244.12 247.18 251.95 235.65 C252.82 234.37 251.84 233.63 250.96 234.14 M101.71 120.1 C77.54 116.33 66.77 156.95 65.31 164.13 C64.98 165.72 66.73 166.04 67.16 164.82 C67.84 162.9 77.1 135.59 96.21 139.05 C100.64 139.86 109.26 144.23 112.22 158.03 C112.36 158.69 113.04 158.87 113.38 158.17 L121.32 144.3 C121.83 143.26 122.03 142.7 121.6 141.71 C119.9 137.77 113.34 121.91 101.71 120.1 M434.89 152.74 C418.1 152.05 393.49 161.32 386.34 161.56 C351.44 162.74 337.85 151.89 324.67 144.16 C334.67 130.55 373.3 115.3 386 128.77 C386.14 128.92 386.37 128.93 386.52 128.79 C388.49 126.98 400.75 115.76 400.54 115.5 C374.86 84.48 316.02 126.42 306 161.73 C305.51 163.45 305.69 164.31 306.51 164.23 C310.89 163.8 328.74 176.24 342.6 178.72 C325.9 184.49 301.67 195.05 288.23 191 C276.32 187.41 278 170.5 268.93 169.78 C256.39 168.78 242.15 198.91 230.21 198.59 C218.27 198.26 230.96 164.26 215.92 159.22 C189.41 150.34 142.07 210.05 78.86 210.05 C42.15 210.05 12 187.2 12 145.38 C12 111.83 58.54 72.8 108.21 90.86 C116.75 93.97 114 91.25 110.13 88.67 C103.6 84.32 78.62 73.9 51.87 84.36 C23.08 95.61 2 122.69 2 162.93 C2 195.19 29.3 231.69 78.26 231.69 C130.84 231.69 182.95 168.46 206.98 177.96 C217.66 182.18 203.75 221.75 220.6 223.41 C233.62 224.7 248.5 189.32 258.99 192.71 C267.11 195.33 263.76 210.84 287.21 213.02 C307.64 214.91 339.48 198.17 362.1 188.17 C376.33 181.88 403.03 174.68 418.31 173.52 C425.43 172.97 425.15 174.9 425.74 173.98 C425.75 173.98 437.01 154.83 437.12 154.19 C437.27 153.28 436.67 152.82 434.89 152.74 M350.27 92.55 C350.72 93 351.45 93 351.9 92.55 L363.79 80.66 C364.24 80.21 364.24 79.48 363.79 79.03 L351.9 67.14 C351.45 66.69 350.72 66.69 350.27 67.14 L338.38 79.03 C337.93 79.48 337.93 80.21 338.38 80.66 Z"/></svg></div><span class="in-l">Gheith <i></i> Damietta</span></div>
-</div><div class="topbar" id="topbar">
+<div class="topbar" id="topbar">
 <div class="ann" role="region" aria-label="Announcements">
   <div class="ann-in wrap">
     <a class="an-side" href="#visit"><svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-6.1-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.9 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.4"/></svg>Showroom in Damietta · open daily</a>
