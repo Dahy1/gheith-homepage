@@ -2333,7 +2333,16 @@ main h3, .crs-t h3 { font-weight: 600; }
   .steps p { display: none; }
   .steps li { padding: 12px 0 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .steps li:focus-visible { outline: 1px solid var(--burg); outline-offset: 4px; }
+  /* the stages play on their own: the line over the current step fills in the time it stays */
+  .steps li { position: relative; }
+  .steps li.on { border-top-color: var(--line); }
+  :where(:root[dir=rtl]) .steps li::after { content: ""; position: absolute; top: -2px; right: 0; left: 0; height: 2px; background: var(--burg); transform: scaleX(0); transform-origin: right; pointer-events: none; }
+
+  :where(:root[dir=ltr]) .steps li::after { content: ""; position: absolute; top: -2px; left: 0; right: 0; height: 2px; background: var(--burg); transform: scaleX(0); transform-origin: left; pointer-events: none; }
+  .steps li.on::after { animation: stepFill var(--dur, 3s) linear forwards; }
+  .steps.paused li.on::after { animation-play-state: paused; }
 }
+@keyframes stepFill { to { transform: scaleX(1); } }
 /* ======================= v21 ======================= */
 @media (max-width: 900px) {
   .st-in { align-items: stretch; }
@@ -4451,12 +4460,35 @@ var T = function (s) { return s; };
         G.to(photo, { clipPath: HIDE_X, duration: .7, ease: 'power2.inOut', overwrite: 'auto' });
       }
     }
-    var onTap = function (e) { var li = e.target.closest('#steps li'); if (li) showStep(stepEls.indexOf(li)); };
+    // the stages play on their own while the card is on screen: 1, 2, 3, then the card clears and it begins again.
+    // A tap jumps to a stage and the loop carries on from there; the line over the current step fills as it plays.
+    var HOLD = [2.8, 3.2, 3.4], timer = null, running = false, planSvg = $('#planBox .plan');
+    function stopT() { if (timer) { timer.kill(); timer = null; } }
+    function schedule() {
+      stopT(); if (!running || cur < 0) return;
+      stepsBox.style.setProperty('--dur', HOLD[cur] + 's');
+      timer = G.delayedCall(HOLD[cur], function () { if (cur < 2) { showStep(cur + 1); schedule(); } else restart(); });
+    }
+    function restart() {
+      stopT();
+      G.to([planSvg, photo], { opacity: 0, duration: .5, ease: 'power2.in', overwrite: 'auto', onComplete: function () {
+        G.killTweensOf(walls.concat(furn, dims, fills, hids, [photo, photoImg]));
+        walls.concat(furn).forEach(function (p) { G.set(p, { strokeDashoffset: p.getTotalLength() + 6 }); });
+        G.set(dims.concat(fills, hids), { opacity: 0 }); G.set(photo, { clipPath: HIDE_X });
+        G.set([planSvg, photo], { opacity: 1 });
+        cur = -1; showStep(0); schedule();
+      } });
+    }
+    var onTap = function (e) { var li = e.target.closest('#steps li'); if (li) { showStep(stepEls.indexOf(li)); schedule(); } };
     var onKey = function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('#steps li')) { e.preventDefault(); onTap(e); } };
     stepEls.forEach(function (li) { li.setAttribute('role', 'button'); li.setAttribute('tabindex', '0'); li.classList.remove('on', 'done'); });
     stepsBox.addEventListener('click', onTap); stepsBox.addEventListener('keydown', onKey);
-    var mtmST = ST.create({ trigger: '#planBox', start: 'top 78%', once: true, onEnter: function () { showStep(0); } });
+    var mtmST = ST.create({ trigger: '#planBox', start: 'top 85%', end: 'bottom 10%', onToggle: function (s) {
+      running = s.isActive; stepsBox.classList.toggle('paused', !running);
+      if (running) { if (cur < 0) showStep(0); schedule(); } else stopT();
+    } });
     return function () {
+      stopT(); stepsBox.classList.remove('paused'); stepsBox.style.removeProperty('--dur'); G.set([planSvg, photo], { opacity: 1 });
       crRow.removeEventListener('scroll', crSync); stepsBox.removeEventListener('click', onTap); stepsBox.removeEventListener('keydown', onKey); mtmST.kill();
       stepEls.forEach(function (li) { li.removeAttribute('role'); li.removeAttribute('tabindex'); li.removeAttribute('aria-pressed'); });
       G.killTweensOf(walls.concat(furn, dims, fills, hids, [photo, photoImg]));
