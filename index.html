@@ -4420,6 +4420,8 @@ html.hd-hidden .gm-sum { top: 24px; }
 /* phones: titles stand alone, without the paragraph under them, in the hero's slides and every section */
 @media (max-width: 700px) {
   .hc-p, .swc > p, .sh-r .lead, .sh-lead, .dm-txt, .dm-txt .lead, .mbk-l .lead, .mtm-copy .lead, .st-in .say, .st-copy .say { display: none !important; }
+  /* with the paragraph gone, the title keeps its distance from the buttons under it */
+  .hc-t { margin-bottom: 26px; }
 }
 /* the Damietta relief keeps a reading size on wide screens */
 @media (min-width: 901px) { .dm-art .dm-frame { width: min(86%, 920px); } .dm-art .dm-frame:has(.dmw) { width: min(100%, 1100px); } }
